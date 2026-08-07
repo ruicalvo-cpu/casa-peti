@@ -1,172 +1,63 @@
-<!DOCTYPE html>
-<html lang="pt-PT">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Casa Peti</title>
+// Casa Peti — Service Worker
+// Guarda em cache o "esqueleto" da app (HTML/CSS/JS/ícones) para que abra
+// instantaneamente e funcione mesmo com fraca cobertura de rede na aldeia.
+// Os dados partilhados (compras, menus, etc.) NÃO passam por aqui —
+// esses vêm sempre da base de dados em tempo real.
 
-<meta name="theme-color" content="#112E2A">
-<meta name="description" content="Gestão da casa de férias em família — compras, menus, agenda, vinhos e informação útil.">
+const CACHE_NAME = "casa-peti-shell-v5";
 
-<!-- PWA -->
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Casa Peti">
-<link rel="icon" href="icons/icon-192.png">
+const SHELL_FILES = [
+  "./",
+  "./index.html",
+  "./css/style.css",
+  "./js/app.js",
+  "./js/firebase-config.js",
+  "./js/compras.js",
+  "./js/menus.js",
+  "./manifest.json",
+  "./icons/icon-192.png",
+  "./icons/icon-512.png",
+];
 
-<!-- Tipografia -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(SHELL_FILES))
+  );
+  self.skipWaiting();
+});
 
-<link rel="stylesheet" href="css/style.css">
-</head>
-<body>
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(
+        keys
+          .filter((key) => key !== CACHE_NAME)
+          .map((key) => caches.delete(key))
+      )
+    )
+  );
+  self.clients.claim();
+});
 
-<header class="app-header">
-  <div class="app-header__inner">
-    <h1>Casa Peti</h1>
-    <span class="app-header__date" id="header-date">—</span>
-  </div>
-</header>
-<div class="tile-strip" aria-hidden="true"></div>
+self.addEventListener("fetch", (event) => {
+  const url = new URL(event.request.url);
 
-<main>
+  // Nunca guardar em cache chamadas a APIs externas (tempo, base de dados, etc.)
+  // — isso tem de vir sempre fresco da rede.
+  if (url.origin !== self.location.origin) {
+    return;
+  }
 
-  <!-- ================= HOME ================= -->
-  <section class="view" id="view-home">
-    <h2 class="view-title">Olá! 👋</h2>
-    <p class="view-subtitle">Aqui tens o resumo de hoje e amanhã em Venade.</p>
-
-    <div class="card">
-      <div class="card__label"><span class="dot"></span>Tempo</div>
-      <div class="day-tabs">
-        <button class="day-tab is-active" data-day="0">Hoje</button>
-        <button class="day-tab" data-day="1">Amanhã</button>
-      </div>
-      <div class="weather-row" id="weather-casa-praia">
-        <div class="weather-tile"><div class="weather-tile__place">A carregar…</div></div>
-        <div class="weather-tile"><div class="weather-tile__place">A carregar…</div></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card__label"><span class="dot"></span>Quem está cá</div>
-      <div class="summary-row">
-        <div class="summary-row__icon">🛏️</div>
-        <div>
-          <div class="summary-row__title">Agenda de visitas</div>
-          <div class="summary-row__value empty-state">Secção ainda por construir — em breve aqui vês quem dorme cá hoje e amanhã.</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card__label"><span class="dot"></span>Comida & Atividades</div>
-      <div class="summary-row">
-        <div class="summary-row__icon">🍽️</div>
-        <div>
-          <div class="summary-row__title">Menu de hoje</div>
-          <div class="summary-row__value empty-state">Ainda por definir.</div>
-        </div>
-      </div>
-      <div class="summary-row">
-        <div class="summary-row__icon">🎯</div>
-        <div>
-          <div class="summary-row__title">Atividade de hoje</div>
-          <div class="summary-row__value empty-state">Ainda por definir.</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card__label"><span class="dot"></span>Bom saber</div>
-      <div class="summary-row">
-        <div class="summary-row__icon">📌</div>
-        <div>
-          <div class="summary-row__title">Eventos relevantes</div>
-          <div class="summary-row__value empty-state">Sem eventos assinalados por agora.</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= COMPRAS ================= -->
-  <section class="view" id="view-compras">
-    <h2 class="view-title">Lista de Compras</h2>
-    <p class="view-subtitle">Todos podem adicionar o que falta — quem for ao supermercado leva tudo de uma vez.</p>
-
-    <form class="card shop-form" id="compras-form">
-      <input type="text" id="compras-input" placeholder="Ex: leite, tomates, vinho verde…" autocomplete="off">
-      <button type="submit">Adicionar</button>
-    </form>
-
-    <div id="compras-lista">
-      <div class="empty-state" style="padding:8px 4px;">A carregar…</div>
-    </div>
-  </section>
-
-  <!-- ================= MENUS ================= -->
-  <section class="view" id="view-menus">
-    <h2 class="view-title">Menus & Atividades</h2>
-    <p class="view-subtitle">O plano de refeições e do que se vai fazer, dia a dia.</p>
-    <div class="placeholder">
-      <span class="placeholder__icon">🍽️</span>
-      <div class="placeholder__title">Ainda por construir</div>
-      Vai ajudar a coordenar com a empregada e a organizar os dias.
-    </div>
-  </section>
-
-  <!-- ================= VINHOS ================= -->
-  <section class="view" id="view-vinhos">
-    <h2 class="view-title">Vinhos</h2>
-    <p class="view-subtitle">O registo dos vinhos provados nas férias, com notas e classificações.</p>
-    <div class="placeholder">
-      <span class="placeholder__icon">🍷</span>
-      <div class="placeholder__title">Ainda por construir</div>
-      Aqui vai ficar o repositório de vinhos, avaliações e comentários.
-    </div>
-  </section>
-
-  <!-- ================= AGENDA ================= -->
-  <section class="view" id="view-agenda">
-    <h2 class="view-title">Agenda de Quartos</h2>
-    <p class="view-subtitle">Quem fica em cada quarto e em que dias.</p>
-    <div class="placeholder">
-      <span class="placeholder__icon">🛏️</span>
-      <div class="placeholder__title">Ainda por construir</div>
-      Quarto da Mãe, Quarto do Rui, Quarto do Nuno — disponibilidade ao pormenor.
-    </div>
-  </section>
-
-  <!-- ================= INFO ================= -->
-  <section class="view" id="view-info">
-    <h2 class="view-title">Informação Útil</h2>
-    <p class="view-subtitle">Password do wifi, festas da aldeia, e outras informações práticas.</p>
-    <div class="placeholder">
-      <span class="placeholder__icon">ℹ️</span>
-      <div class="placeholder__title">Ainda por construir</div>
-      Tudo o que é preciso saber, num só sítio.
-    </div>
-  </section>
-
-</main>
-
-<nav class="tab-bar" id="tab-bar">
-  <button class="tab-bar__item" data-route="home"><span class="icon">🏠</span>Início</button>
-  <button class="tab-bar__item" data-route="compras"><span class="icon">🛒</span>Compras</button>
-  <button class="tab-bar__item" data-route="menus"><span class="icon">🍽️</span>Menus</button>
-  <button class="tab-bar__item" data-route="vinhos"><span class="icon">🍷</span>Vinhos</button>
-  <button class="tab-bar__item" data-route="agenda"><span class="icon">🛏️</span>Agenda</button>
-  <button class="tab-bar__item" data-route="info"><span class="icon">ℹ️</span>Info</button>
-</nav>
-
-<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
-<script src="js/firebase-config.js"></script>
-<script src="js/compras.js"></script>
-<script src="js/app.js"></script>
-</body>
-</html>
+  // Estratégia "network-first": tenta sempre a rede primeiro, para nunca
+  // mostrares uma versão desatualizada da app. Só usa a cache como reserva
+  // se não houver ligação (ex: fraca cobertura na aldeia).
+  event.respondWith(
+    fetch(event.request)
+      .then((response) => {
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+        return response;
+      })
+      .catch(() => caches.match(event.request))
+  );
+});
