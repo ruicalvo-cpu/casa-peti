@@ -11,7 +11,7 @@
     { id: "mae", label: "Quarto da Mãe", short: "Mãe" },
     { id: "nuno", label: "Quarto Nuno/Rita", short: "Nuno/Rita" },
     { id: "rui", label: "Quarto Rui/Inês", short: "Rui/Inês" },
-    { id: "menino", label: "Quarto Menino", short: "Menino" },
+    { id: "menino", label: "Quarto Meninos", short: "Meninos" },
     { id: "garagem", label: "Quarto Garagem", short: "Garagem" },
   ];
 
