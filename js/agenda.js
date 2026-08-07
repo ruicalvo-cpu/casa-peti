@@ -9,12 +9,23 @@
 
   const ROOMS = [
     { id: "mae", label: "Quarto da Mãe", short: "Mãe" },
-    { id: "rui", label: "Quarto do Rui", short: "Rui" },
-    { id: "nuno", label: "Quarto do Nuno", short: "Nuno" },
+    { id: "nuno", label: "Quarto Nuno/Rita", short: "Nuno/Rita" },
+    { id: "rui", label: "Quarto Rui/Inês", short: "Rui/Inês" },
+    { id: "menino", label: "Quarto Menino", short: "Menino" },
+    { id: "garagem", label: "Quarto Garagem", short: "Garagem" },
   ];
 
   function todayStr() {
     return new Date().toISOString().slice(0, 10);
+  }
+
+  function dateStrWithOffset(offsetDays) {
+    const d = new Date();
+    d.setDate(d.getDate() + offsetDays);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
   }
 
   function escapeHtml(str) {
@@ -144,9 +155,11 @@
     const el = document.getElementById("home-agenda-hoje");
     if (!el) return;
 
-    const today = todayStr();
+    const offset = (window.CasaPeti && window.CasaPeti.homeDayOffset) || 0;
+    const targetDate = dateStrWithOffset(offset);
+
     const lines = ROOMS.map((room) => {
-      const stay = stays.find((s) => s.quarto === room.id && isOngoing(s, today));
+      const stay = stays.find((s) => s.quarto === room.id && isOngoing(s, targetDate));
       return stay
         ? `${room.label}: ${escapeHtml(stay.pessoa)}`
         : `${room.label}: <span class="empty-state">livre</span>`;
@@ -176,6 +189,8 @@
         });
       }
     );
+
+    window.addEventListener("casapeti:homedaychange", () => renderHomeToday(cachedStays));
 
     initWeekNav();
 

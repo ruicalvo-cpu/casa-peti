@@ -1,6 +1,7 @@
 // ============================================
 // Casa Peti — app.js
-// Navegação simples (SPA por hash) + widget do tempo (Open-Meteo, sem chave)
+// Navegação entre secções, data no cabeçalho, seletor Hoje/Amanhã global
+// da home page, widget do tempo (Open-Meteo) e registo do service worker.
 // ============================================
 
 const LOCATIONS = {
@@ -35,6 +36,27 @@ const WEATHER_CODES = {
 
 function describeWeather(code) {
   return WEATHER_CODES[code] || ["—", "❓"];
+}
+
+// ---------- Seletor Hoje/Amanhã global da home ----------
+// Outros ficheiros (menus.js, agenda.js) leem window.CasaPeti.homeDayOffset
+// e escutam o evento "casapeti:homedaychange" para atualizarem os seus cartões.
+
+window.CasaPeti = window.CasaPeti || { homeDayOffset: 0 };
+
+function setHomeDay(offset) {
+  window.CasaPeti.homeDayOffset = offset;
+  document.querySelectorAll("[data-home-day]").forEach((btn) => {
+    btn.classList.toggle("is-active", Number(btn.dataset.homeDay) === offset);
+  });
+  renderWeatherRow();
+  window.dispatchEvent(new CustomEvent("casapeti:homedaychange", { detail: { offset } }));
+}
+
+function initHomeDayToggle() {
+  document.querySelectorAll("[data-home-day]").forEach((btn) => {
+    btn.addEventListener("click", () => setHomeDay(Number(btn.dataset.homeDay)));
+  });
 }
 
 // ---------- Data no cabeçalho ----------
@@ -81,7 +103,6 @@ function initNav() {
 // ---------- Tempo (Casa + Praia) ----------
 
 let weatherData = null; // cache em memória: { casa: {...}, praia: {...} }
-let activeDay = 0; // 0 = hoje, 1 = amanhã
 
 async function fetchWeather(loc) {
   const url =
@@ -97,8 +118,9 @@ async function fetchWeather(loc) {
 
 function renderWeatherRow() {
   const container = document.getElementById("weather-casa-praia");
-  if (!weatherData) return;
+  if (!weatherData || !container) return;
 
+  const activeDay = window.CasaPeti.homeDayOffset;
   container.innerHTML = "";
 
   Object.entries(LOCATIONS).forEach(([key, loc]) => {
@@ -145,17 +167,10 @@ async function initWeather() {
     weatherData = { casa, praia };
     renderWeatherRow();
   } catch (err) {
-    container.innerHTML = `<div class="empty-state">Não foi possível obter o tempo agora. Verifica a ligação à internet.</div>`;
+    if (container) {
+      container.innerHTML = `<div class="empty-state">Não foi possível obter o tempo agora. Verifica a ligação à internet.</div>`;
+    }
   }
-
-  document.querySelectorAll(".day-tab").forEach((tab) => {
-    tab.addEventListener("click", () => {
-      activeDay = Number(tab.dataset.day);
-      document.querySelectorAll(".day-tab").forEach((t) => t.classList.remove("is-active"));
-      tab.classList.add("is-active");
-      renderWeatherRow();
-    });
-  });
 }
 
 // ---------- Service worker ----------
@@ -175,6 +190,8 @@ function initServiceWorker() {
 document.addEventListener("DOMContentLoaded", () => {
   renderHeaderDate();
   initNav();
+  initHomeDayToggle();
   initWeather();
   initServiceWorker();
 });
+

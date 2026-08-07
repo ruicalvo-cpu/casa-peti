@@ -12,6 +12,15 @@
     return d.toISOString().slice(0, 10);
   }
 
+  function dateStrWithOffset(offsetDays) {
+    const d = new Date();
+    d.setDate(d.getDate() + offsetDays);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  }
+
   function formatDateLabel(dateStr) {
     const [y, m, d] = dateStr.split("-").map(Number);
     const date = new Date(y, m - 1, d);
@@ -127,30 +136,34 @@
 
     if (!window.db) return;
 
-    // Lista completa, ordenada por data — alimenta a secção Menus.
-    if (list) {
-      window.db
-        .collection(COLLECTION)
-        .orderBy("data", "asc")
-        .onSnapshot(
-          (snapshot) => {
-            const days = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-            renderDayCards(days);
-          },
-          () => {
+    let cachedDays = [];
+
+    function renderHomeForCurrentOffset() {
+      const offset = (window.CasaPeti && window.CasaPeti.homeDayOffset) || 0;
+      const targetDate = dateStrWithOffset(offset);
+      const day = cachedDays.find((d) => d.id === targetDate);
+      renderHomeToday(day || null);
+    }
+
+    // Lista completa, ordenada por data — alimenta a secção Menus E a home page.
+    window.db
+      .collection(COLLECTION)
+      .orderBy("data", "asc")
+      .onSnapshot(
+        (snapshot) => {
+          cachedDays = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+          if (list) renderDayCards(cachedDays);
+          renderHomeForCurrentOffset();
+        },
+        () => {
+          if (list) {
             list.innerHTML =
               '<div class="empty-state" style="padding:8px 4px;">Não foi possível ligar ao plano partilhado. Verifica a ligação à internet.</div>';
           }
-        );
-    }
+        }
+      );
 
-    // Documento de hoje — alimenta a home page.
-    window.db
-      .collection(COLLECTION)
-      .doc(todayStr())
-      .onSnapshot((doc) => {
-        renderHomeToday(doc.exists ? doc.data() : null);
-      });
+    window.addEventListener("casapeti:homedaychange", renderHomeForCurrentOffset);
 
     if (form) {
       form.addEventListener("submit", (e) => {
