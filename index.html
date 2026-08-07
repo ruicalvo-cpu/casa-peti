@@ -37,15 +37,20 @@
 
   <!-- ================= HOME ================= -->
   <section class="view" id="view-home">
+    <div class="home-hero">
+      <img src="images/casa-hero.jpg" alt="Casa Peti, Venade" class="home-hero__img">
+    </div>
+
     <h2 class="view-title">Olá! 👋</h2>
-    <p class="view-subtitle">Aqui tens o resumo de hoje e amanhã em Venade.</p>
+    <p class="view-subtitle">Aqui tens o resumo do dia.</p>
+
+    <div class="home-day-toggle">
+      <button type="button" class="day-tab is-active" data-home-day="0">Hoje</button>
+      <button type="button" class="day-tab" data-home-day="1">Amanhã</button>
+    </div>
 
     <div class="card">
       <div class="card__label"><span class="dot"></span>Tempo</div>
-      <div class="day-tabs">
-        <button class="day-tab is-active" data-day="0">Hoje</button>
-        <button class="day-tab" data-day="1">Amanhã</button>
-      </div>
       <div class="weather-row" id="weather-casa-praia">
         <div class="weather-tile"><div class="weather-tile__place">A carregar…</div></div>
         <div class="weather-tile"><div class="weather-tile__place">A carregar…</div></div>
@@ -68,14 +73,14 @@
       <div class="summary-row">
         <div class="summary-row__icon">🍽️</div>
         <div>
-          <div class="summary-row__title">Menu de hoje</div>
+          <div class="summary-row__title">Menu</div>
           <div class="summary-row__value" id="home-menu-hoje"><span class="empty-state">Ainda por definir.</span></div>
         </div>
       </div>
       <div class="summary-row">
         <div class="summary-row__icon">🎯</div>
         <div>
-          <div class="summary-row__title">Atividade de hoje</div>
+          <div class="summary-row__title">Atividade</div>
           <div class="summary-row__value" id="home-atividade-hoje"><span class="empty-state">Ainda por definir.</span></div>
         </div>
       </div>
@@ -186,8 +191,24 @@
       </form>
     </div>
 
+    <div class="card room-card" data-room="nuno">
+      <div class="card__label"><span class="dot"></span>Quarto Nuno/Rita</div>
+      <div class="room-stays" data-room-list="nuno">
+        <div class="empty-state" style="padding:2px 0;">A carregar…</div>
+      </div>
+      <form class="room-add-form" data-room-form="nuno">
+        <input type="text" data-field="pessoa" placeholder="Nome" required>
+        <div class="room-add-form__dates">
+          <input type="date" data-field="dataInicio" required>
+          <span>a</span>
+          <input type="date" data-field="dataFim">
+        </div>
+        <button type="submit">+ Adicionar estadia</button>
+      </form>
+    </div>
+
     <div class="card room-card" data-room="rui">
-      <div class="card__label"><span class="dot"></span>Quarto do Rui</div>
+      <div class="card__label"><span class="dot"></span>Quarto Rui/Inês</div>
       <div class="room-stays" data-room-list="rui">
         <div class="empty-state" style="padding:2px 0;">A carregar…</div>
       </div>
@@ -202,12 +223,28 @@
       </form>
     </div>
 
-    <div class="card room-card" data-room="nuno">
-      <div class="card__label"><span class="dot"></span>Quarto do Nuno</div>
-      <div class="room-stays" data-room-list="nuno">
+    <div class="card room-card" data-room="menino">
+      <div class="card__label"><span class="dot"></span>Quarto Menino</div>
+      <div class="room-stays" data-room-list="menino">
         <div class="empty-state" style="padding:2px 0;">A carregar…</div>
       </div>
-      <form class="room-add-form" data-room-form="nuno">
+      <form class="room-add-form" data-room-form="menino">
+        <input type="text" data-field="pessoa" placeholder="Nome" required>
+        <div class="room-add-form__dates">
+          <input type="date" data-field="dataInicio" required>
+          <span>a</span>
+          <input type="date" data-field="dataFim">
+        </div>
+        <button type="submit">+ Adicionar estadia</button>
+      </form>
+    </div>
+
+    <div class="card room-card" data-room="garagem">
+      <div class="card__label"><span class="dot"></span>Quarto Garagem</div>
+      <div class="room-stays" data-room-list="garagem">
+        <div class="empty-state" style="padding:2px 0;">A carregar…</div>
+      </div>
+      <form class="room-add-form" data-room-form="garagem">
         <input type="text" data-field="pessoa" placeholder="Nome" required>
         <div class="room-add-form__dates">
           <input type="date" data-field="dataInicio" required>

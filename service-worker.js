@@ -4,7 +4,7 @@
 // Os dados partilhados (compras, menus, etc.) NÃO passam por aqui —
 // esses vêm sempre da base de dados em tempo real.
 
-const CACHE_NAME = "casa-peti-shell-v9";
+const CACHE_NAME = "casa-peti-shell-v11";
 
 const SHELL_FILES = [
   "./",
@@ -20,6 +20,7 @@ const SHELL_FILES = [
   "./manifest.json",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
+  "./images/casa-hero.jpg",
 ];
 
 self.addEventListener("install", (event) => {
