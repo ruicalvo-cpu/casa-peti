@@ -58,7 +58,7 @@
         <div class="summary-row__icon">🛏️</div>
         <div>
           <div class="summary-row__title">Agenda de visitas</div>
-          <div class="summary-row__value empty-state">Secção ainda por construir — em breve aqui vês quem dorme cá hoje e amanhã.</div>
+          <div class="summary-row__value" id="home-agenda-hoje"><span class="empty-state">A carregar…</span></div>
         </div>
       </div>
     </div>
@@ -141,11 +141,68 @@
   <section class="view" id="view-agenda">
     <h2 class="view-title">Agenda de Quartos</h2>
     <p class="view-subtitle">Quem fica em cada quarto e em que dias.</p>
-    <div class="placeholder">
-      <span class="placeholder__icon">🛏️</span>
-      <div class="placeholder__title">Ainda por construir</div>
-      Quarto da Mãe, Quarto do Rui, Quarto do Nuno — disponibilidade ao pormenor.
+
+    <div class="card week-card">
+      <div class="card__label"><span class="dot"></span>Vista da semana</div>
+      <div class="week-nav">
+        <button type="button" id="week-prev" aria-label="Semana anterior">‹</button>
+        <span id="week-label">—</span>
+        <button type="button" id="week-next" aria-label="Semana seguinte">›</button>
+      </div>
+      <div id="week-grid">
+        <div class="empty-state" style="padding:4px 0;">A carregar…</div>
+      </div>
     </div>
+
+    <div class="card room-card" data-room="mae">
+      <div class="card__label"><span class="dot"></span>Quarto da Mãe</div>
+      <div class="room-stays" data-room-list="mae">
+        <div class="empty-state" style="padding:2px 0;">A carregar…</div>
+      </div>
+      <form class="room-add-form" data-room-form="mae">
+        <input type="text" data-field="pessoa" placeholder="Nome" required>
+        <div class="room-add-form__dates">
+          <input type="date" data-field="dataInicio" required>
+          <span>a</span>
+          <input type="date" data-field="dataFim">
+        </div>
+        <button type="submit">+ Adicionar estadia</button>
+      </form>
+    </div>
+
+    <div class="card room-card" data-room="rui">
+      <div class="card__label"><span class="dot"></span>Quarto do Rui</div>
+      <div class="room-stays" data-room-list="rui">
+        <div class="empty-state" style="padding:2px 0;">A carregar…</div>
+      </div>
+      <form class="room-add-form" data-room-form="rui">
+        <input type="text" data-field="pessoa" placeholder="Nome" required>
+        <div class="room-add-form__dates">
+          <input type="date" data-field="dataInicio" required>
+          <span>a</span>
+          <input type="date" data-field="dataFim">
+        </div>
+        <button type="submit">+ Adicionar estadia</button>
+      </form>
+    </div>
+
+    <div class="card room-card" data-room="nuno">
+      <div class="card__label"><span class="dot"></span>Quarto do Nuno</div>
+      <div class="room-stays" data-room-list="nuno">
+        <div class="empty-state" style="padding:2px 0;">A carregar…</div>
+      </div>
+      <form class="room-add-form" data-room-form="nuno">
+        <input type="text" data-field="pessoa" placeholder="Nome" required>
+        <div class="room-add-form__dates">
+          <input type="date" data-field="dataInicio" required>
+          <span>a</span>
+          <input type="date" data-field="dataFim">
+        </div>
+        <button type="submit">+ Adicionar estadia</button>
+      </form>
+    </div>
+
+    <p class="view-hint">Deixa a data de fim em branco se ainda não souberes até quando fica.</p>
   </section>
 
   <!-- ================= INFO ================= -->
@@ -175,6 +232,7 @@
 <script src="js/firebase-config.js"></script>
 <script src="js/compras.js"></script>
 <script src="js/menus.js"></script>
+<script src="js/agenda.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>
