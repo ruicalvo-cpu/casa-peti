@@ -130,10 +130,26 @@
   <section class="view" id="view-vinhos">
     <h2 class="view-title">Vinhos</h2>
     <p class="view-subtitle">O registo dos vinhos provados nas férias, com notas e classificações.</p>
-    <div class="placeholder">
-      <span class="placeholder__icon">🍷</span>
-      <div class="placeholder__title">Ainda por construir</div>
-      Aqui vai ficar o repositório de vinhos, avaliações e comentários.
+
+    <form class="card wine-add-form" id="vinho-form">
+      <input type="text" id="vinho-nome" placeholder="Nome do vinho" required>
+      <div class="wine-add-form__row">
+        <input type="text" id="vinho-produtor" placeholder="Produtor (opcional)">
+        <input type="number" id="vinho-ano" placeholder="Ano" min="1900" max="2100">
+      </div>
+      <select id="vinho-tipo">
+        <option value="Tinto">Tinto</option>
+        <option value="Branco">Branco</option>
+        <option value="Verde">Verde</option>
+        <option value="Rosé">Rosé</option>
+        <option value="Espumante">Espumante</option>
+        <option value="Outro">Outro</option>
+      </select>
+      <button type="submit">+ Adicionar vinho</button>
+    </form>
+
+    <div id="vinhos-lista">
+      <div class="empty-state" style="padding:8px 4px;">A carregar…</div>
     </div>
   </section>
 
@@ -233,6 +249,7 @@
 <script src="js/compras.js"></script>
 <script src="js/menus.js"></script>
 <script src="js/agenda.js"></script>
+<script src="js/vinhos.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

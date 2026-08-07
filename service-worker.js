@@ -4,7 +4,7 @@
 // Os dados partilhados (compras, menus, etc.) NÃO passam por aqui —
 // esses vêm sempre da base de dados em tempo real.
 
-const CACHE_NAME = "casa-peti-shell-v7";
+const CACHE_NAME = "casa-peti-shell-v8";
 
 const SHELL_FILES = [
   "./",
@@ -15,6 +15,7 @@ const SHELL_FILES = [
   "./js/compras.js",
   "./js/menus.js",
   "./js/agenda.js",
+  "./js/vinhos.js",
   "./manifest.json",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
