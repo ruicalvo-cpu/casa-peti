@@ -1,56 +1,103 @@
-# Casa Peti — como publicar a app
+// ============================================
+// Casa Peti — compras.js
+// Lista de compras partilhada, sincronizada em tempo real via Firestore.
+// ============================================
 
-Este ficheiro tem os passos para colocares a app online, com um link real que
-qualquer familiar pode abrir no telemóvel e instalar. Vamos usar o **GitHub
-Pages**, que é gratuito.
+(function () {
+  const COLLECTION = "compras";
 
-## O que já está feito
+  function getNome() {
+    let nome = localStorage.getItem("casapeti_nome");
+    if (!nome) {
+      nome = (prompt("Como te chamas? (fica guardado neste telemóvel, para sabermos quem pediu cada coisa)") || "Alguém").trim();
+      if (!nome) nome = "Alguém";
+      localStorage.setItem("casapeti_nome", nome);
+    }
+    return nome;
+  }
 
-- ✅ Home page com o resumo do dia e o tempo (Casa em Venade + Praia de Moledo)
-- ✅ Navegação para as 6 secções (as outras 5 aparecem como "ainda por construir" — vamos construí-las juntos nas próximas conversas)
-- ✅ Configuração para poderes instalar a app no telemóvel (ícone, nome, ecrã cheio)
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str == null ? "" : String(str);
+    return div.innerHTML;
+  }
 
-## Passo 1 — Criar um repositório no GitHub
+  function renderList(items) {
+    const list = document.getElementById("compras-lista");
+    if (!list) return;
 
-1. Entra em [github.com](https://github.com) com a tua conta.
-2. Clica no botão verde **"New"** (ou o `+` no canto superior direito → "New repository").
-3. Nome do repositório: `casa-peti`
-4. Deixa como **Public**.
-5. Não marques nenhuma opção extra (README, .gitignore, etc.) — já temos os ficheiros.
-6. Clica **"Create repository"**.
+    if (items.length === 0) {
+      list.innerHTML = '<div class="empty-state" style="padding:8px 4px;">A lista está vazia. Adiciona o que for preciso comprar 🙂</div>';
+      return;
+    }
 
-## Passo 2 — Enviar os ficheiros
+    list.innerHTML = items
+      .map(
+        (item) => `
+      <div class="shop-item ${item.comprado ? "is-done" : ""}" data-id="${item.id}">
+        <button class="shop-item__check" data-action="toggle" data-id="${item.id}" data-done="${item.comprado ? "1" : "0"}" aria-label="Marcar como comprado">
+          ${item.comprado ? "✓" : ""}
+        </button>
+        <div class="shop-item__body">
+          <div class="shop-item__text">${escapeHtml(item.texto)}</div>
+          <div class="shop-item__meta">${escapeHtml(item.criadoPor || "")}</div>
+        </div>
+        <button class="shop-item__delete" data-action="delete" data-id="${item.id}" aria-label="Remover">✕</button>
+      </div>`
+      )
+      .join("");
+  }
 
-1. Descomprime (unzip) o ficheiro `casa-peti.zip` que te enviei, num sítio do teu computador.
-2. Na página do repositório que acabaste de criar, clica em **"uploading an existing file"** (ou "Add file" → "Upload files").
-3. Arrasta **a pasta `casa-peti` toda** (com as subpastas `css`, `js`, `icons` lá dentro) para a zona de upload.
-   - O GitHub deve manter a estrutura de pastas automaticamente.
-   - Se só te deixar arrastar ficheiros individuais e não pastas, arrasta primeiro os ficheiros da raiz (`index.html`, `manifest.json`, `service-worker.js`) e depois, dentro do repositório já criado, usa "Add file → Create new file" e escreve `css/style.css` no nome (o GitHub cria a pasta automaticamente) colando o conteúdo — diz-me se precisares que faça isto contigo com mais detalhe.
-4. Em baixo, escreve uma mensagem tipo "primeira versão" e clica **"Commit changes"**.
+  function initCompras() {
+    const form = document.getElementById("compras-form");
+    const input = document.getElementById("compras-input");
+    const list = document.getElementById("compras-lista");
 
-## Passo 3 — Ativar o GitHub Pages
+    if (!form || !list || !window.db) return;
 
-1. No repositório, vai a **Settings** (menu de topo).
-2. No menu lateral esquerdo, clica em **Pages**.
-3. Em "Branch", escolhe **main** e a pasta **/ (root)**, depois **Save**.
-4. Espera 1–2 minutos. Vai aparecer um link tipo:
-   `https://o-teu-utilizador.github.io/casa-peti/`
+    window.db
+      .collection(COLLECTION)
+      .orderBy("criadoEm", "asc")
+      .onSnapshot(
+        (snapshot) => {
+          const items = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+          renderList(items);
+        },
+        () => {
+          list.innerHTML =
+            '<div class="empty-state" style="padding:8px 4px;">Não foi possível ligar à lista partilhada. Verifica a ligação à internet.</div>';
+        }
+      );
 
-## Passo 4 — Instalar no telemóvel
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const texto = input.value.trim();
+      if (!texto) return;
 
-1. Abre esse link no telemóvel (Safari no iPhone, Chrome no Android).
-2. **iPhone:** toca no ícone de partilha (quadrado com seta) → "Adicionar ao ecrã principal".
-3. **Android:** toca no menu (⋮) → "Adicionar ao ecrã principal" ou vai aparecer um aviso automático a sugerir instalar.
-4. Vai aparecer o ícone da Casa Peti no ecrã principal, como uma app normal.
+      window.db.collection(COLLECTION).add({
+        texto,
+        comprado: false,
+        criadoPor: getNome(),
+        criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
+      });
 
-## Próximos passos
+      input.value = "";
+      input.focus();
+    });
 
-Volta à conversa comigo e diz que já publicaste — vamos:
-1. Configurar a base de dados partilhada (Firebase), para que a lista de compras,
-   agenda, etc. fiquem sincronizadas entre todos.
-2. Construir a secção da Lista de Compras (a mais simples, ótima para testar a
-   base de dados).
-3. Continuar pelas restantes secções.
+    list.addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-action]");
+      if (!btn) return;
+      const id = btn.dataset.id;
 
-Sempre que eu te enviar ficheiros atualizados, repetes o Passo 2 (upload) —
-o GitHub Pages atualiza sozinho em 1–2 minutos.
+      if (btn.dataset.action === "toggle") {
+        const isDone = btn.dataset.done === "1";
+        window.db.collection(COLLECTION).doc(id).update({ comprado: !isDone });
+      } else if (btn.dataset.action === "delete") {
+        window.db.collection(COLLECTION).doc(id).delete();
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", initCompras);
+})();
