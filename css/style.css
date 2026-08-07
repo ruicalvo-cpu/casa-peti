@@ -98,22 +98,6 @@ button {
   background-color: var(--teal-dark);
 }
 
-/* ---------- Home hero (foto da casa) ---------- */
-
-.home-hero {
-  border-radius: var(--radius);
-  overflow: hidden;
-  margin-bottom: 16px;
-  box-shadow: var(--shadow);
-}
-
-.home-hero__img {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-  display: block;
-}
-
 /* ---------- Seletor Hoje/Amanhã global ---------- */
 
 .home-day-toggle {
