@@ -87,7 +87,7 @@
         <div class="summary-row__icon">📌</div>
         <div>
           <div class="summary-row__title">Eventos relevantes</div>
-          <div class="summary-row__value empty-state">Sem eventos assinalados por agora.</div>
+          <div class="summary-row__value">Festas de N. Sra. dos Remédios em Venade (até 15 ago). Mais eventos na aba Info.</div>
         </div>
       </div>
     </div>
@@ -225,10 +225,50 @@
   <section class="view" id="view-info">
     <h2 class="view-title">Informação Útil</h2>
     <p class="view-subtitle">Password do wifi, festas da aldeia, e outras informações práticas.</p>
-    <div class="placeholder">
-      <span class="placeholder__icon">ℹ️</span>
-      <div class="placeholder__title">Ainda por construir</div>
-      Tudo o que é preciso saber, num só sítio.
+
+    <div class="card">
+      <div class="card__label"><span class="dot"></span>WiFi</div>
+      <div class="info-field">
+        <label class="day-field__label">Rede</label>
+        <input type="text" id="wifi-rede" class="day-field__input" placeholder="Nome da rede">
+      </div>
+      <div class="info-field">
+        <label class="day-field__label">Password</label>
+        <input type="text" id="wifi-password" class="day-field__input" placeholder="Password">
+      </div>
+      <p class="field-hint">Grava sozinho ao saíres do campo.</p>
+    </div>
+
+    <div class="card">
+      <div class="card__label"><span class="dot"></span>Festas de N. Sra. dos Remédios — Venade</div>
+      <p class="event-dates">5 a 15 de agosto</p>
+      <ul class="event-list">
+        <li><strong>5 ago, 20:00</strong> — Início das novenas</li>
+        <li><strong>9 ago, 8:30</strong> — Novena seguida de missa</li>
+        <li><strong>13 ago</strong> — 18:00 início das festividades · 20:30 Missa e Procissão de Velas · 22:00 grupo "3 Foles"</li>
+        <li><strong>14 ago</strong> — 14:00 bar aberto · 17:00 porco no espeto · 22:00 grupo "Arcolris" · 00:00 fogo de artifício</li>
+        <li><strong>15 ago</strong> — 9:00 missa solene · 16:00 procissão "Vira a Bombar" · 17:30 desfile e Festival de Folclore</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card__label"><span class="dot"></span>Outros eventos no concelho — agosto 2026</div>
+      <ul class="event-list">
+        <li><strong>5–7 ago</strong> — SonicBlast Fest (rock/metal) — Praia da Duna do Caldeirão, Vila Praia de Âncora</li>
+        <li><strong>até 16 ago</strong> — Festa do Mar e da Sardinha — Campo do Castelo, Vila Praia de Âncora (grátis)</li>
+        <li><strong>14–16 ago</strong> — Encontro Motard de Vilar de Mouros — muitas motas, mais trânsito</li>
+        <li><strong>15 ago, 21:00</strong> — Festival de Folclore de Moledo — Anfiteatro António Pedro (grátis)</li>
+        <li><strong>18–22 ago</strong> — Festival Vilar de Mouros — grande festival (YUNGBLUD, Kasabian, Dropkick Murphys…) — muito trânsito e ruído na zona</li>
+        <li><strong>22 ago</strong> — Festas de N. Sra. do Amparo — Vilarelho</li>
+        <li><strong>28–29 ago</strong> — Festa de São João d'Arga</li>
+      </ul>
+      <p class="field-hint">Pesquisado em 7 de agosto de 2026 — para confirmar, consulta <a href="https://www.cm-caminha.pt" target="_blank" rel="noopener">cm-caminha.pt</a>.</p>
+    </div>
+
+    <div class="card">
+      <div class="card__label"><span class="dot"></span>Notas da casa</div>
+      <textarea id="info-notas" class="info-notas" placeholder="Ex: dia do lixo, contactos úteis, regras da casa…"></textarea>
+      <p class="field-hint">Editável por todos — grava sozinho.</p>
     </div>
   </section>
 
@@ -250,6 +290,7 @@
 <script src="js/menus.js"></script>
 <script src="js/agenda.js"></script>
 <script src="js/vinhos.js"></script>
+<script src="js/info.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>
