@@ -470,6 +470,74 @@ main {
   text-align: center;
 }
 
+/* ---------- Informação Útil ---------- */
+
+.info-field {
+  margin-bottom: 10px;
+}
+
+.info-field:last-of-type {
+  margin-bottom: 8px;
+}
+
+.field-hint {
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  margin-top: 4px;
+}
+
+.event-dates {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--terracotta);
+  margin: -4px 0 10px;
+}
+
+.event-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.event-list li {
+  font-size: 13.5px;
+  line-height: 1.5;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.event-list li:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.event-list strong {
+  color: var(--teal);
+}
+
+.info-notas {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 90px;
+  resize: vertical;
+}
+
+.info-notas:focus {
+  outline: 2px solid var(--teal);
+  outline-offset: 1px;
+}
+
 /* ---------- Vinhos ---------- */
 
 .wine-add-form {
